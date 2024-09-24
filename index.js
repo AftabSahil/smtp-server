@@ -39,5 +39,34 @@ app.get('/emails', async (req, res) => {
       res.status(500).json({ error: "Error fetching emails" });
     }
   });
+
+app.put('/emails/:id', async (req, res) => {
+    const { id } = req.params;
+    const { subject, body, sender, recipient } = req.body;
+  
+    try {
+      const updatedEmail = await prisma.email.update({
+        where: { id: parseInt(id) },
+        data: { subject, body, sender, recipient },
+      });
+      res.json(updatedEmail);
+    } catch (error) {
+      res.status(500).json({ error: "Error updating email" });
+    }
+  });
+
+  app.delete('/emails/:id', async (req, res) => {
+    const { id } = req.params;
+  
+    try {
+      await prisma.email.delete({
+        where: { id: parseInt(id) },
+      });
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Error deleting email" });
+    }
+  });
+    
   
 app.listen(port)
