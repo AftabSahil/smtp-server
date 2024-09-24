@@ -40,7 +40,7 @@ app.post('/emails', async (req, res) => {
 app.get('/',(req, res)=>{res.sendFile(__dirname+"/public/index.html")})
 app.get('/emails', async (req, res) => {
     try {
-      const emails = await prisma.email.findMany();
+      const emails = await prisma.users.findMany();
       res.json(emails);
     } catch (error) {
       res.status(500).json({ error: "Error fetching emails" });
@@ -52,7 +52,7 @@ app.put('/emails/:id', async (req, res) => {
     const { subject, body, sender, recipient } = req.body;
   
     try {
-      const updatedEmail = await prisma.email.update({
+      const updatedEmail = await prisma.users.update({
         where: { id: parseInt(id) },
         data: { subject, body, sender, recipient },
       });
@@ -66,7 +66,7 @@ app.put('/emails/:id', async (req, res) => {
     const { id } = req.params;
   
     try {
-      await prisma.email.delete({
+      await prisma.users.delete({
         where: { id: parseInt(id) },
       });
       res.status(204).send();
