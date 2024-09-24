@@ -1,10 +1,14 @@
-const { PrismaClient } = require('@prisma/client');
+import { PrismaClient } from "@prisma/client"
+import express from "express"
+import {z} from "zod"
+import bodyParser from "body-parser"
+import { dirname } from "path"
+import { fileURLToPath } from "url"
 const prisma = new PrismaClient();
-const express = require('express');
 const app = express();
 const port = 3000;
-const z = require('zod');
-app.use(express.json())
+const __dirname = dirname(fileURLToPath(import.meta.url));
+app.use(bodyParser.urlencoded({extended:true}));
 const emailSchema = z.object({
     subject: z.string().nonempty(),
     body: z.string().nonempty(),
@@ -13,7 +17,10 @@ const emailSchema = z.object({
   });
   
 app.post('/emails', async (req, res) => {
-    const { subject, body, sender, recipient } = req.body;
+    const subject = req.body.subject;
+    const body = req.body.body;
+    const sender = req.body.sender;
+    const recipient  = req.body.recipient;
   
     try {
       const email = await prisma.users.create({
@@ -30,7 +37,7 @@ app.post('/emails', async (req, res) => {
       res.status(500).json({ error: "Error creating email" });
     }
   });
-  
+app.get('/',(req, res)=>{res.sendFile(__dirname+"/public/index.html")})
 app.get('/emails', async (req, res) => {
     try {
       const emails = await prisma.email.findMany();
